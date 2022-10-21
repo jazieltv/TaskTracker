@@ -11,4 +11,11 @@ function myFunction() {
   const taskList = document.getElementById("tasks");
   //*read right to left, only this line */ taking taskText and appending it into taskList
   taskList.appendChild(taskText);
+   //initialize array so i can use it to add the "value" to it eventually
+ var arr = [
+  "hello","hi"
+ ]
+ //now wer're gonna append the "value'', into the array
+ arr.push(task);
 }
+
