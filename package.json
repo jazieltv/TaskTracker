@@ -2,6 +2,6 @@
   "type": "module",
   "dependencies": {
     "express": "^4.18.2",
-    "type:": "commonjs"
+    "uuid": "^9.0.0"
   }
 }

@@ -1,5 +1,5 @@
 const addButton = document.getElementById("input-btn");
-
+const uuid = required("uuid");
 function myFunction() {
   //creats a variable task and pulls the "value" which is the text that is inside the textbox
   const task = document.getElementById("inputText").value;
@@ -11,13 +11,20 @@ function myFunction() {
   const taskList = document.getElementById("tasks");
   //*read right to left, only this line */ taking taskText and appending it into taskList
   taskList.appendChild(taskText);
-   //initialize array so i can use it to add the "value" to it eventually
-  let arr = [];
-  arr.unshift(task);
+  //initialize array so i can use it to add the "value" to it eventually....pushing the tasks into the new array
+  var taskListBody = new Array();
+  taskListBody.push(task);
 
-const jsonstring = JSON.stringify(arr)
-const parsedArray = JSON.parse(jsonstring)
-
-  console.log(arr);
+  //code pulled from richard where he uses express to send data to the json file and then also pull it back out
+  app.post("/saveItem", (req, res) => {
+    fs.readFile(__dirname + "/data.json", (err, data) => {
+      const id = uuid();
+      const taskData = JSON.parse(data);
+      req.body.id = id;
+      taskData.items[taskData.items.length] = req.body;
+      fs.writeFileSync(__dirname + "/data.json", JSON.stringify(taskData));
+      res.status(200).json({ message: "New item Saved", id: id });
+    });
+  });
+  //
 }
-
