@@ -1,20 +1,20 @@
 //Select DOM
-const todoInput = document.querySelector(".todo-input");
-const todoButton = document.querySelector(".todo-button");
-const todoList = document.querySelector(".todo-list");
+const input = document.querySelector(".todo-input");
+const taskbutton = document.querySelector(".todo-button");
+const tasklist = document.querySelector(".todo-list");
 
 //Event Listeners
 //DOMContent on webpage is loaded, if loaded then getTodos will run
 document.addEventListener("DOMContentLoaded", getTodos);
-todoButton.addEventListener("click", addTodo);
-todoList.addEventListener("click", deleteTodo);
+taskbutton.addEventListener("click", addTodo);
+tasklist.addEventListener("click", deleteTodo);
 //Functions
 function addTodo(e) {
   //Preventing form from submitting if cancelable
   e.preventDefault();
 
   //Validation for user input
-  if (todoInput.value == "") {
+  if (input.value == "") {
     return alert("You must type something! Try again.");
   }
   //Creating todo Div
@@ -22,15 +22,15 @@ function addTodo(e) {
   todoDiv.classList.add("todo");
   //Create list
   const newTodo = document.createElement("li");
-  newTodo.innerText = todoInput.value;
+  newTodo.innerText = input.value;
 
   //Save to local storage
-  saveLocalTodos(todoInput.value);
+  saveLocalTodos(input.value);
 
   //Adding task to LS using append
   newTodo.classList.add("todo-item");
   todoDiv.appendChild(newTodo);
-  todoInput.value = "";
+  input.value = "";
 
   //Create Completed Button
   const completedButton = document.createElement("button");
@@ -49,7 +49,7 @@ function addTodo(e) {
   editButton.innerHTML = `<i class="fa fa-user-edit">Edit</i>`;
   editButton.classList.add("edit-btn");
   todoDiv.appendChild(editButton);
-  todoList.appendChild(todoDiv);
+  tasklist.appendChild(todoDiv);
   document
     .querySelector(".edit-btn")
     .addEventListener("click", function edittaskfunc() {
@@ -109,7 +109,7 @@ function getTodos() {
     newTodo.innerText = todo;
     newTodo.classList.add("todo-item");
     todoDiv.appendChild(newTodo);
-    todoInput.value = "";
+    input.value = "";
     //Create Completed Button
     const completedButton = document.createElement("button");
     completedButton.innerHTML = `<i class="fas fa-check">Complete</i>`;
@@ -125,7 +125,7 @@ function getTodos() {
     editButton.classList.add("edit-btn");
     todoDiv.appendChild(editButton);
     //attach final Todo
-    todoList.appendChild(todoDiv);
+    tasklist.appendChild(todoDiv);
   });
 }
 
