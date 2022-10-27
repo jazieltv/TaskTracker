@@ -1,5 +1,5 @@
+//We are importing filesystem in order to edit and read taskData.json file
 const fs = require("fs");
-//express is there to condense typing
 const express = require("express");
 //UUID package was installed to assign a unique id to each task for saving and deleting data
 const { v1: uuid } = require("uuid");
@@ -7,59 +7,68 @@ const { v1: uuid } = require("uuid");
 const app = express();
 //port where server is running
 const PORT = process.env.PORT || 3000;
-app.use(express.json());
 
-app.get("/tasks", (req, res) => {
+app.use(express.json());
+//express static is a middleware function for serving static files
+app.use(express.static(__dirname + "/public"));
+
+//Get route - requests data from the server
+app.get("/getItems", (req, res) => {
   //readfile is async
   fs.readFile(__dirname + "/taskData.json", (err, data) => {
     console.log(JSON.parse(data).items);
-    if (err) {
-      console.log("missing JSON file");
-      res.status(500);
-      return;
-    }
     //The res.status functions basically sets the http status for the response
     //200 means the request is fufilled.
     res.status(200).json(JSON.parse(data).items);
   });
 });
 
-app.post("/tasks", (req, res) => {
-  fs.readFile(__dirname + "/data.json", (err, data) => {
-    //parsing turns 'data' into an object that we can now manipulate
-    const tasks = JSON.parse(data);
-    if (err) {
-      console.log("missing JSON file");
-      res.status(500);
-      return;
-    }
-    tasks.push(req.body);
-    fs.writeFile(__dirname + "/data.json", JSON.stringify(tasks));
-    res.status(200)
+//Post route - used to send data to a server
+app.post("/saveItem", (req, res) => {
+  fs.readFile(__dirname + "/taskData.json", (err, data) => {
+    //const id assigns a unique id for each task created
+    const id = uuid();
+    console.log(id);
+
+    const taskData = JSON.parse(data);
+    // The req.body object allows us to access data in a JSON object
+    req.body.id = id;
+    taskData.items[taskData.items.length] = req.body;
+    //writeFileSync rewrites the file
+    fs.writeFileSync(__dirname + "/taskData.json", JSON.stringify(taskData));
+    res.status(200).json({ message: "New item Saved", id: id });
   });
 });
 
-app.put("/tasks/:id", (req, res) => {
-    fs.readFile(__dirname + "/data.json", (err, data) => {
-      const tasks = JSON.parse(data);
-      if (err) {
-        console.log("missing JSON file");
-        res.status(500);
-        return;
+//DELETE Route - deletes a resource from the server
+app.delete("/deleteItem/:id", (req, res) => {
+  fs.readFile(__dirname + "/taskData.json", (err, data) => {
+    const taskData = JSON.parse(data);
+    taskData.items.forEach((item, index) => {
+      //checking if an item has an id equal to an id from the parameters
+      if (item.id === req.params.id) {
+        //splice allows 1 item to be removed
+        taskData.items.splice(index, 1);
       }
-      //tasks.find will run through all of the tasks within the object and returns the tasks 
-      //where thr task id is eequals params.id=":id"
-    //   const task = tasks.find(task => task.id == req.params.id)
-      for (var i = 0; i < tasks.length; i++) {
-        console.log(tasks[i]);
-        //Do something
-    }
-    }      
+    });
+    fs.writeFileSync(__dirname + "/taskData.json", JSON.stringify(taskData));
+    res.status(200).json({ message: "task deleted" });
+  });
+});
+//Patch method - makes partial update (task completed)
+app.patch("/updateItem/:id", (req, res) => {
+  fs.readFile(__dirname + "/taskData.json", (err, data) => {
+    const taskData = JSON.parse(data);
+    taskData.items.forEach((item) => {
+      if (item.id === req.params.id) {
+        item[req.body.prop] = req.body.value;
+      }
+    });
+    fs.writeFileSync(__dirname + "/taskData.json", JSON.stringify(taskData));
+    res.status(200).json({ message: "task updated" });
+  });
+});
 
-
-
-
-
-//adding to the list
-localStorage.setItem("myStorage", JSON.stringify(taskListBody));
-taskListBody = JSON.parse(localStorage.getItem("myStorage"));
+app.listen(PORT, () => {
+  console.log(`Server is running on localhost ${PORT}`);
+});
